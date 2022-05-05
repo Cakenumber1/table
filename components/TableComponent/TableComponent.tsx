@@ -16,6 +16,7 @@ import { PostType } from 'types/PostType';
 import { useStyles } from './style';
 
 type Props = {
+  searchRes: PostType[] | null
   data: PostType[] | null
   search: string
   asc: string
@@ -24,9 +25,11 @@ type Props = {
 };
 
 const TableComponent: React.FC<Props> = ({
-  data, search, asc, loading, handleColumn,
+  searchRes, data, search, asc, loading, handleColumn,
 }) => {
   const classes = useStyles();
+  const posts = searchRes || data;
+  console.log(posts);
   return (
     <TableContainer className={classes.tableContainer} component={Box}>
       <Table aria-label="table">
@@ -56,7 +59,7 @@ const TableComponent: React.FC<Props> = ({
           <CircularProgress sx={{ width: '100%', height: '100%' }} />
         ) : (
           <TableBody>
-            {data && data!.map((post) => (
+            {posts && posts!.map((post) => (
               <TableRow
                 key={post.id}
                 className={classes.tableRow}

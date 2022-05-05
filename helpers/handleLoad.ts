@@ -1,6 +1,6 @@
 import { getData } from 'helpers/getData';
 import React from 'react';
-import { loadPosts, setLoading } from 'store/slices/postsSlice';
+import { loadPosts, PostsType, setLoading } from 'store/slices/postsSlice';
 import { AppDispatch } from 'store/store';
 import { ParamsType, PostType } from 'types/';
 
@@ -24,5 +24,7 @@ export const getRepos = (
 ) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   const response = await getData(`/api/${page}`, { params });
-  dispatch(loadPosts(response.ans));
+  const a: PostsType = {};
+  a[page] = response.ans;
+  dispatch(loadPosts(a));
 };

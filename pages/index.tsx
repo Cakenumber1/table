@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  loadPosts,
+  clearPosts,
   setAll, setAsc, setPage, setSearch,
 } from 'store/slices/postsSlice';
 import { RootState } from 'store/store';
@@ -19,8 +19,8 @@ import { PostType } from 'types';
 const Home: NextPage = () => {
   const dispatch = useDispatch();
 
-  const data = useSelector((state: RootState) => state.posts.posts);
   const page = useSelector((state: RootState) => state.posts.currentPage);
+  const data = useSelector((state: RootState) => state.posts.posts);
   const search = useSelector((state: RootState) => state.posts.currentSearch);
   const asc = useSelector((state: RootState) => state.posts.currentAsc);
   const loading = useSelector((state: RootState) => state.posts.isLoading);
@@ -40,19 +40,22 @@ const Home: NextPage = () => {
     dispatch(setAll({ page: pageQuery, search: searchQuery, asc: ascQuery }));
   }, [ascQuery, pageQuery, searchQuery]);
 
-  // search results
+  // load page or get from redux
   useEffect(() => {
-    if (searchRes && searchRes.length) dispatch(loadPosts(searchRes));
-  }, [searchRes]);
+    setSearchRes(null);
+    if (!data[page]) {
+      dispatch(getRepos(page, { sType: search, sDir: asc }));
+    }
+  }, [page]);
 
-  // all queries
+  // change sort
   useEffect(() => {
+    dispatch(clearPosts());
     dispatch(getRepos(page, { sType: search, sDir: asc }));
-  }, [page, search, asc]);
+  }, [search, asc]);
 
   // upd page
   const handlePage = (pageNew: number) => {
-    setSearchRes(null);
     window.history.pushState(null, '', `/?page=${pageNew}&search=${search}&asc=${asc}`);
     dispatch(setPage(pageNew));
   };
@@ -83,7 +86,8 @@ const Home: NextPage = () => {
         setSearchRes={setSearchRes}
       />
       <TableComponent
-        data={data}
+        searchRes={searchRes}
+        data={data[page]}
         search={search}
         asc={asc}
         loading={loading}

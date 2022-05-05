@@ -5,22 +5,24 @@ import { FullSliceType } from 'types/FullSliceType';
 import type { RootState } from '../store';
 
 // Define a type for the slice state
-interface PostsState {
-  posts: PostType[],
+type PostsState = {
+  posts : PostsType,
   currentPage: number,
   currentSearch: string,
   currentAsc: string,
   isLoading: boolean,
-}
+};
 
 // Define the initial state using that type
 const initialState: PostsState = {
-  posts: [],
+  posts: {},
   currentPage: 1,
   currentSearch: 'id',
   currentAsc: 'true',
   isLoading: true,
 };
+
+export type PostsType = { [page: number]: PostType[]; };
 
 export const postsSlice = createSlice({
   name: 'posts',
@@ -31,9 +33,13 @@ export const postsSlice = createSlice({
       state.isLoading = action.payload;
       return state;
     },
-    loadPosts: (state, action: PayloadAction<PostType[]>) => {
-      state.posts = action.payload;
+    loadPosts: (state, action: PayloadAction<PostsType>) => {
+      state.posts = { ...state.posts, ...action.payload };
       state.isLoading = false;
+      return state;
+    },
+    clearPosts: (state) => {
+      state.posts = {};
       return state;
     },
     // Use the PayloadAction type to declare the contents of `action.payload`
@@ -61,6 +67,7 @@ export const postsSlice = createSlice({
 export const {
   setLoading,
   loadPosts,
+  clearPosts,
   setPage,
   setSearch,
   setAsc,

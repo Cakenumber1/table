@@ -9,7 +9,8 @@ export const handleSearch = async (setSearchRes: React.Dispatch<PostType[]>, str
     await getData('/api/', { params: { str } }).then((data) => res.push(...data.result));
     if (res && res.length) {
       setSearchRes(res);
+    } else {
+      setSearchRes([]);
     }
-    setSearchRes([]);
   }
 };
